@@ -1,14 +1,17 @@
 package com.genymobile.scrcpy;
 
-import com.genymobile.scrcpy.wrappers.SurfaceControl;
-
 import android.graphics.Rect;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
+import android.opengl.GLES20;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.view.Surface;
+
+import com.genymobile.scrcpy.glec.EGLRender;
+import com.genymobile.scrcpy.wrappers.SurfaceControl;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -35,6 +38,26 @@ public class ScreenEncoder implements Device.RotationListener {
     private int maxFps;
     private boolean sendFrameMeta;
     private long ptsOrigin;
+
+    //是否固定帧率
+    private boolean mIsFixedFrame = false;
+    private EGLRender mEglRender;
+
+    private EGLRender. onFrameCallBack mFrameCallBack = new EGLRender.onFrameCallBack() {
+        @Override
+        public void onError() {
+
+        }
+
+        @Override
+        public void onStop() {
+            Ln.v("EglRender onStop!");
+            mEglRender.releaseResource();
+            mEglRender = null;
+        }
+    };
+
+
 
     public ScreenEncoder(boolean sendFrameMeta, int bitRate, int maxFps, List<CodecOption> codecOptions, String encoderName) {
         this.sendFrameMeta = sendFrameMeta;
@@ -87,8 +110,27 @@ public class ScreenEncoder implements Device.RotationListener {
 
                 setSize(format, videoRect.width(), videoRect.height());
                 configure(codec, format);
-                Surface surface = codec.createInputSurface();
+                Surface surface ;
+                if (mIsFixedFrame){
+                    this.mEglRender = new EGLRender(codec.createInputSurface(), videoRect.width(), videoRect.height(), 24, 500);
+                    this.mEglRender.setCallBack(mFrameCallBack);
+                    surface = mEglRender.getDecodeSurface();
+                }else {
+                    surface = codec.createInputSurface();
+                }
+
+
+
+                //设置预览画面
                 setDisplaySurface(display, surface, videoRotation, contentRect, unlockedVideoRect, layerStack);
+
+                if (this.mIsFixedFrame) {
+                    this.mEglRender.setStartTimeNs(SystemClock.elapsedRealtimeNanos());
+                    this.mEglRender.start();
+                    Ln.d("Encoder running");
+                }
+
+
                 codec.start();
                 try {
                     alive = encode(codec, fd);
@@ -98,6 +140,11 @@ public class ScreenEncoder implements Device.RotationListener {
                     destroyDisplay(display);
                     codec.release();
                     surface.release();
+                    Ln.d("Encoder end");
+                    if (this.mEglRender != null) {
+                        this.mEglRender.stop();
+                    }
+
                 }
             } while (alive);
         } finally {
@@ -112,6 +159,11 @@ public class ScreenEncoder implements Device.RotationListener {
         while (!consumeRotationChange() && !eof) {
             int outputBufferId = codec.dequeueOutputBuffer(bufferInfo, -1);
             eof = (bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0;
+
+           boolean isKey=  (bufferInfo.flags & MediaCodec.BUFFER_FLAG_KEY_FRAME) !=0;
+           if (isKey){
+               Ln.v("编出关键帧");
+           }
             try {
                 if (consumeRotationChange()) {
                     // must restart encoding with new size
@@ -203,11 +255,14 @@ public class ScreenEncoder implements Device.RotationListener {
         format.setString(MediaFormat.KEY_MIME, MediaFormat.MIMETYPE_VIDEO_AVC);
         format.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
         // must be present to configure the encoder, but does not impact the actual frame rate, which is variable
-        format.setInteger(MediaFormat.KEY_FRAME_RATE, 60);
+        format.setInteger(MediaFormat.KEY_FRAME_RATE, 24);
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, DEFAULT_I_FRAME_INTERVAL);
+        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, DEFAULT_I_FRAME_INTERVAL); //10
         // display the very first frame, and recover from bad quality when no new frames
-        format.setLong(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, REPEAT_FRAME_DELAY_US); // µs
+        // 当画面静止时,重复最后一帧，不影响界面显示
+        format.setLong(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, REPEAT_FRAME_DELAY_US); // 100_000µs
+
+        format.setInteger(MediaFormat.KEY_BITRATE_MODE,MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR);
         if (maxFps > 0) {
             // The key existed privately before Android 10:
             // <https://android.googlesource.com/platform/frameworks/base/+/625f0aad9f7a259b6881006ad8710adce57d1384%5E%21/>
@@ -221,11 +276,13 @@ public class ScreenEncoder implements Device.RotationListener {
             }
         }
 
+		Ln.d("encoder video format: " + format.toString());
+
         return format;
     }
 
     private static IBinder createDisplay() {
-        return SurfaceControl.createDisplay("scrcpy", true);
+        return SurfaceControl.createDisplay("scrcpy", false);
     }
 
     private static void configure(MediaCodec codec, MediaFormat format) {
@@ -251,4 +308,59 @@ public class ScreenEncoder implements Device.RotationListener {
     private static void destroyDisplay(IBinder display) {
         SurfaceControl.destroyDisplay(display);
     }
+
+
+
+
+    //---------------------------------------------------------------------------------------------------
+
+
+    // RGB color values for generated frames
+    private static final int TEST_R0 = 0;
+    private static final int TEST_G0 = 136;
+    private static final int TEST_B0 = 0;
+    private static final int TEST_R1 = 236;
+    private static final int TEST_G1 = 50;
+    private static final int TEST_B1 = 186;
+    /**
+     * Generates a frame of data using GL commands.  We have an 8-frame animation
+     * sequence that wraps around.  It looks like this:
+     * <pre>
+     *   0 1 2 3
+     *   7 6 5 4
+     * </pre>
+     * We draw one of the eight rectangles and leave the rest set to the clear color.
+     */
+    private void generateSurfaceFrame(int frameIndex,int mWidth,int mHeight) {
+        frameIndex %= 8;
+
+        int startX, startY;
+        if (frameIndex < 4) {
+            // (0,0) is bottom-left in GL
+            startX = frameIndex * (mWidth / 4);
+            startY = mHeight / 2;
+        } else {
+            startX = (7 - frameIndex) * (mWidth / 4);
+            startY = 0;
+        }
+
+        GLES20.glClearColor(TEST_R0 / 255.0f, TEST_G0 / 255.0f, TEST_B0 / 255.0f, 1.0f);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+
+        GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
+        GLES20.glScissor(startX, startY, mWidth / 4, mHeight / 2);
+        GLES20.glClearColor(TEST_R1 / 255.0f, TEST_G1 / 255.0f, TEST_B1 / 255.0f, 1.0f);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glDisable(GLES20.GL_SCISSOR_TEST);
+    }
+
+    /**
+     * Generates the presentation time for frame N, in nanoseconds.
+     */
+    private long computePresentationTimeNsec(int frameIndex) {
+        final long ONE_BILLION = 1000000000;
+        return frameIndex * ONE_BILLION / maxFps;
+    }
+
+
 }

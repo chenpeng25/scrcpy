@@ -29,6 +29,9 @@ public final class Workarounds {
         Looper.prepareMainLooper();
     }
 
+    /**
+     * 此操作的作用
+     */
     @SuppressLint("PrivateApi,DiscouragedPrivateApi")
     public static void fillAppInfo() {
         try {

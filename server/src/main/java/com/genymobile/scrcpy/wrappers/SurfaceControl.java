@@ -1,12 +1,12 @@
 package com.genymobile.scrcpy.wrappers;
 
-import com.genymobile.scrcpy.Ln;
-
 import android.annotation.SuppressLint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.IBinder;
 import android.view.Surface;
+
+import com.genymobile.scrcpy.Ln;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,6 +23,9 @@ public final class SurfaceControl {
     static {
         try {
             CLASS = Class.forName("android.view.SurfaceControl");
+            for (Method m : CLASS.getDeclaredMethods()) {
+                Ln.i("-- " + m);
+            }
         } catch (ClassNotFoundException e) {
             throw new AssertionError(e);
         }
@@ -68,6 +71,7 @@ public final class SurfaceControl {
         }
     }
 
+    ///public static void android.view.SurfaceControl.setDisplaySurface(android.os.IBinder,android.view.Surface)
     public static void setDisplaySurface(IBinder displayToken, Surface surface) {
         try {
             CLASS.getMethod("setDisplaySurface", IBinder.class, Surface.class).invoke(null, displayToken, surface);

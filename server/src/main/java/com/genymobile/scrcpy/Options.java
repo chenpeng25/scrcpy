@@ -129,4 +129,26 @@ public class Options {
     public void setEncoderName(String encoderName) {
         this.encoderName = encoderName;
     }
+
+	@Override
+		public String toString() {
+			return "Options{" +
+					"logLevel=" + logLevel +
+					", maxSize=" + maxSize +
+					", bitRate=" + bitRate +
+					", maxFps=" + maxFps +
+					", lockedVideoOrientation=" + lockedVideoOrientation +
+					", tunnelForward=" + tunnelForward +
+					", crop=" + crop +
+					", sendFrameMeta=" + sendFrameMeta +
+					", control=" + control +
+					", displayId=" + displayId +
+					", showTouches=" + showTouches +
+					", stayAwake=" + stayAwake +
+					", codecOptions='" + codecOptions + '\'' +
+					", encoderName='" + encoderName + '\'' +
+					'}';
+		}
+
+	
 }

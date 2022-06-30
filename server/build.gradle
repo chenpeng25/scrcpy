@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+//apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 30
@@ -18,9 +19,21 @@ android {
     }
 }
 
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.13'
 }
 
-apply from: "$project.rootDir/config/android-checkstyle.gradle"
+//apply from: "$project.rootDir/config/android-checkstyle.gradle"
+
+
+
+task makeJar(type: Jar){
+	delete 'build/libs/scrcpy-server.jar'
+    archivesBaseName = 'scrcpy-server'
+	from(project.zipTree('build/intermediates/packaged-classes/release/classes.jar'))
+    destinationDir = file('build/libs')
+}
+
+makeJar.dependsOn(build)

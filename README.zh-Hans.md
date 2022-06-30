@@ -231,7 +231,7 @@ scrcpy -r file.mkv
 仅录制，不显示镜像：
 
 ```bash
-scrcpy --no-display --record file.mp4
+
 scrcpy -Nr file.mkv
 # 按 Ctrl+C 停止录制
 ```
@@ -632,32 +632,32 @@ _<kbd>[Super]</kbd> 键通常是指 <kbd>Windows</kbd> 或 <kbd>Cmd</kbd> 键。
 
 [Super]: https://en.wikipedia.org/wiki/Super_key_(keyboard_button)
 
- | 操作                              | 快捷键                                       |
- | --------------------------------- | :------------------------------------------- |
- | 全屏                              | <kbd>MOD</kbd>+<kbd>f</kbd>                  |
- | 向左旋转屏幕                      | <kbd>MOD</kbd>+<kbd>←</kbd> _(左箭头)_       |
- | 向右旋转屏幕                      | <kbd>MOD</kbd>+<kbd>→</kbd> _(右箭头)_       |
- | 将窗口大小重置为1:1 (匹配像素)    | <kbd>MOD</kbd>+<kbd>g</kbd>                  |
- | 将窗口大小重置为消除黑边          | <kbd>MOD</kbd>+<kbd>w</kbd> \| _双击¹_       |
- | 点按 `主屏幕`                     | <kbd>MOD</kbd>+<kbd>h</kbd> \| _鼠标中键_    |
- | 点按 `返回`                       | <kbd>MOD</kbd>+<kbd>b</kbd> \| _鼠标右键²_   |
- | 点按 `切换应用`                   | <kbd>MOD</kbd>+<kbd>s</kbd>                  |
- | 点按 `菜单` (解锁屏幕)            | <kbd>MOD</kbd>+<kbd>m</kbd>                  |
- | 点按 `音量+`                      | <kbd>MOD</kbd>+<kbd>↑</kbd> _(上箭头)_       |
- | 点按 `音量-`                      | <kbd>MOD</kbd>+<kbd>↓</kbd> _(下箭头)_       |
- | 点按 `电源`                       | <kbd>MOD</kbd>+<kbd>p</kbd>                  |
- | 打开屏幕                          | _鼠标右键²_                                  |
- | 关闭设备屏幕 (但继续在电脑上显示) | <kbd>MOD</kbd>+<kbd>o</kbd>                  |
- | 打开设备屏幕                      | <kbd>MOD</kbd>+<kbd>Shift</kbd>+<kbd>o</kbd> |
- | 旋转设备屏幕                      | <kbd>MOD</kbd>+<kbd>r</kbd>                  |
- | 展开通知面板                      | <kbd>MOD</kbd>+<kbd>n</kbd>                  |
- | 收起通知面板                      | <kbd>MOD</kbd>+<kbd>Shift</kbd>+<kbd>n</kbd> |
- | 复制到剪贴板³                     | <kbd>MOD</kbd>+<kbd>c</kbd>                  |
- | 剪切到剪贴板³                     | <kbd>MOD</kbd>+<kbd>x</kbd>                  |
- | 同步剪贴板并粘贴³                 | <kbd>MOD</kbd>+<kbd>v</kbd>                  |
- | 注入电脑剪贴板文本                | <kbd>MOD</kbd>+<kbd>Shift</kbd>+<kbd>v</kbd> |
- | 打开/关闭FPS显示 (在 stdout)      | <kbd>MOD</kbd>+<kbd>i</kbd>                  |
- | 捏拉缩放                          | <kbd>Ctrl</kbd>+_按住并移动鼠标_             |
+| 操作                              | 快捷键                                       |
+| --------------------------------- | :------------------------------------------- |
+| 全屏                              | <kbd>MOD</kbd>+<kbd>f</kbd>                  |
+| 向左旋转屏幕                      | <kbd>MOD</kbd>+<kbd>←</kbd> _(左箭头)_       |
+| 向右旋转屏幕                      | <kbd>MOD</kbd>+<kbd>→</kbd> _(右箭头)_       |
+| 将窗口大小重置为1:1 (匹配像素)    | <kbd>MOD</kbd>+<kbd>g</kbd>                  |
+| 将窗口大小重置为消除黑边          | <kbd>MOD</kbd>+<kbd>w</kbd> \| _双击¹_       |
+| 点按 `主屏幕`                     | <kbd>MOD</kbd>+<kbd>h</kbd> \| _鼠标中键_    |
+| 点按 `返回`                       | <kbd>MOD</kbd>+<kbd>b</kbd> \| _鼠标右键²_   |
+| 点按 `切换应用`                   | <kbd>MOD</kbd>+<kbd>s</kbd>                  |
+| 点按 `菜单` (解锁屏幕)            | <kbd>MOD</kbd>+<kbd>m</kbd>                  |
+| 点按 `音量+`                      | <kbd>MOD</kbd>+<kbd>↑</kbd> _(上箭头)_       |
+| 点按 `音量-`                      | <kbd>MOD</kbd>+<kbd>↓</kbd> _(下箭头)_       |
+| 点按 `电源`                       | <kbd>MOD</kbd>+<kbd>p</kbd>                  |
+| 打开屏幕                          | _鼠标右键²_                                  |
+| 关闭设备屏幕 (但继续在电脑上显示) | <kbd>MOD</kbd>+<kbd>o</kbd>                  |
+| 打开设备屏幕                      | <kbd>MOD</kbd>+<kbd>Shift</kbd>+<kbd>o</kbd> |
+| 旋转设备屏幕                      | <kbd>MOD</kbd>+<kbd>r</kbd>                  |
+| 展开通知面板                      | <kbd>MOD</kbd>+<kbd>n</kbd>                  |
+| 收起通知面板                      | <kbd>MOD</kbd>+<kbd>Shift</kbd>+<kbd>n</kbd> |
+| 复制到剪贴板³                     | <kbd>MOD</kbd>+<kbd>c</kbd>                  |
+| 剪切到剪贴板³                     | <kbd>MOD</kbd>+<kbd>x</kbd>                  |
+| 同步剪贴板并粘贴³                 | <kbd>MOD</kbd>+<kbd>v</kbd>                  |
+| 注入电脑剪贴板文本                | <kbd>MOD</kbd>+<kbd>Shift</kbd>+<kbd>v</kbd> |
+| 打开/关闭FPS显示 (在 stdout)      | <kbd>MOD</kbd>+<kbd>i</kbd>                  |
+| 捏拉缩放                          | <kbd>Ctrl</kbd>+_按住并移动鼠标_             |
 
 _¹双击黑边可以去除黑边_
 _²点击鼠标右键将在屏幕熄灭时点亮屏幕，其余情况则视为按下返回键 。_
@@ -710,13 +710,13 @@ _³需要安卓版本 Android >= 7。_
 
     Copyright (C) 2018 Genymobile
     Copyright (C) 2018-2021 Romain Vimont
-
+    
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-
+    
         http://www.apache.org/licenses/LICENSE-2.0
-
+    
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

@@ -33,9 +33,16 @@ public final class Ln {
     }
 
     public static boolean isEnabled(Level level) {
-        return level.ordinal() >= threshold.ordinal();
+        //return level.ordinal() >= threshold.ordinal();  //cp 暂时屏蔽
+        return true;
     }
 
+	public static void v(String message) {
+			Log.d(TAG, message);
+		}
+
+
+	
     public static void d(String message) {
         if (isEnabled(Level.DEBUG)) {
             Log.d(TAG, message);

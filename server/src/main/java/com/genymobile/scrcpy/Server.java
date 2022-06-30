@@ -1,12 +1,12 @@
 package com.genymobile.scrcpy;
 
-import com.genymobile.scrcpy.wrappers.ContentProvider;
-
 import android.graphics.Rect;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.os.BatteryManager;
 import android.os.Build;
+
+import com.genymobile.scrcpy.wrappers.ContentProvider;
 
 import java.io.IOException;
 import java.util.List;
@@ -246,7 +246,9 @@ public final class Server {
         });
 
         Options options = createOptions(args);
-
+		
+		Ln.d(options.toString());
+			
         Ln.initLogLevel(options.getLogLevel());
 
         scrcpy(options);
