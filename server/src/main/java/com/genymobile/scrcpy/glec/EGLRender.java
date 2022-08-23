@@ -34,9 +34,11 @@ public class EGLRender implements SurfaceTexture.OnFrameAvailableListener {
     private Surface decodeSurface;
     private onFrameCallBack mCallBack;
     private long mCurrentTimeMs = 0;
+    //1、为什么设计两个EglContext、mEglSurface
     private EGLContext mEGLContext = EGL14.EGL_NO_CONTEXT;
     private EGLContext mEGLContextEncoder = EGL14.EGL_NO_CONTEXT;
     private EGLDisplay mEGLDisplay = EGL14.EGL_NO_DISPLAY;
+    //2、为什么设计两个EGLSurface
     private EGLSurface mEGLSurface = EGL14.EGL_NO_SURFACE;
     private EGLSurface mEGLSurfaceEncoder = EGL14.EGL_NO_SURFACE;
 
@@ -213,7 +215,7 @@ public class EGLRender implements SurfaceTexture.OnFrameAvailableListener {
     }*/
 
     private void eglSetup(Surface surface) {
-        this.mEGLDisplay = EGL14.eglGetDisplay(0);
+        this.mEGLDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
         if (this.mEGLDisplay == EGL14.EGL_NO_DISPLAY) {
             throw new RuntimeException("unable to get EGL14 display");
         }
