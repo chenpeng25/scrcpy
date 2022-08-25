@@ -329,7 +329,9 @@ public final class Server {
         });
 
         Options options = createOptions(args);
-
+		
+		Ln.d(options.toString());
+			
         Ln.initLogLevel(options.getLogLevel());
 
         scrcpy(options);

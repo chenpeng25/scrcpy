@@ -196,4 +196,32 @@ public class Options {
     public void setSendDummyByte(boolean sendDummyByte) {
         this.sendDummyByte = sendDummyByte;
     }
+
+
+    @Override
+    public String toString() {
+        return "Options{" +
+                "logLevel=" + logLevel +
+                ", maxSize=" + maxSize +
+                ", bitRate=" + bitRate +
+                ", maxFps=" + maxFps +
+                ", lockVideoOrientation=" + lockVideoOrientation +
+                ", tunnelForward=" + tunnelForward +
+                ", crop=" + crop +
+                ", control=" + control +
+                ", displayId=" + displayId +
+                ", showTouches=" + showTouches +
+                ", stayAwake=" + stayAwake +
+                ", codecOptions=" + codecOptions +
+                ", encoderName='" + encoderName + '\'' +
+                ", powerOffScreenOnClose=" + powerOffScreenOnClose +
+                ", clipboardAutosync=" + clipboardAutosync +
+                ", downsizeOnError=" + downsizeOnError +
+                ", cleanup=" + cleanup +
+                ", powerOn=" + powerOn +
+                ", sendDeviceMeta=" + sendDeviceMeta +
+                ", sendFrameMeta=" + sendFrameMeta +
+                ", sendDummyByte=" + sendDummyByte +
+                '}';
+    }
 }

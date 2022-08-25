@@ -15,7 +15,7 @@ public final class Ln {
         VERBOSE, DEBUG, INFO, WARN, ERROR
     }
 
-    private static Level threshold = Level.INFO;
+    private static Level threshold = Level.VERBOSE;
 
     private Ln() {
         // not instantiable
@@ -33,7 +33,8 @@ public final class Ln {
     }
 
     public static boolean isEnabled(Level level) {
-        return level.ordinal() >= threshold.ordinal();
+        //return level.ordinal() >= threshold.ordinal();
+        return true;
     }
 
     public static void v(String message) {
