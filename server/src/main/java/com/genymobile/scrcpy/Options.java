@@ -12,11 +12,11 @@ public class Options {
     private boolean video = true;
     private boolean audio = true;
     private int maxSize;
-    private VideoCodec videoCodec = VideoCodec.H264;
-    private AudioCodec audioCodec = AudioCodec.OPUS;
+    private VideoCodec videoCodec = VideoCodec.H264; //默认H264编码
+    private AudioCodec audioCodec = AudioCodec.OPUS; //音频Opus编码
     private AudioSource audioSource = AudioSource.OUTPUT;
-    private int videoBitRate = 8000000;
-    private int audioBitRate = 128000;
+    private int videoBitRate = 8000000; //视频码率8M
+    private int audioBitRate = 128000; //音频码率128k
     private int maxFps;
     private int lockVideoOrientation = -1;
     private boolean tunnelForward;
@@ -357,8 +357,15 @@ public class Options {
     public String toString() {
         return "Options{" +
                 "logLevel=" + logLevel +
+                ", scid=" + scid +
+                ", video=" + video +
+                ", audio=" + audio +
                 ", maxSize=" + maxSize +
-                ", bitRate=" + bitRate +
+                ", videoCodec=" + videoCodec +
+                ", audioCodec=" + audioCodec +
+                ", audioSource=" + audioSource +
+                ", videoBitRate=" + videoBitRate +
+                ", audioBitRate=" + audioBitRate +
                 ", maxFps=" + maxFps +
                 ", lockVideoOrientation=" + lockVideoOrientation +
                 ", tunnelForward=" + tunnelForward +
@@ -367,16 +374,21 @@ public class Options {
                 ", displayId=" + displayId +
                 ", showTouches=" + showTouches +
                 ", stayAwake=" + stayAwake +
-                ", codecOptions=" + codecOptions +
-                ", encoderName='" + encoderName + '\'' +
+                ", videoCodecOptions=" + videoCodecOptions +
+                ", audioCodecOptions=" + audioCodecOptions +
+                ", videoEncoder='" + videoEncoder + '\'' +
+                ", audioEncoder='" + audioEncoder + '\'' +
                 ", powerOffScreenOnClose=" + powerOffScreenOnClose +
                 ", clipboardAutosync=" + clipboardAutosync +
                 ", downsizeOnError=" + downsizeOnError +
                 ", cleanup=" + cleanup +
                 ", powerOn=" + powerOn +
+                ", listEncoders=" + listEncoders +
+                ", listDisplays=" + listDisplays +
                 ", sendDeviceMeta=" + sendDeviceMeta +
                 ", sendFrameMeta=" + sendFrameMeta +
                 ", sendDummyByte=" + sendDummyByte +
+                ", sendCodecMeta=" + sendCodecMeta +
                 '}';
     }
 }

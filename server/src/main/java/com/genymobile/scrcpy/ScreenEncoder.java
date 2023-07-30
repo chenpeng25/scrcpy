@@ -115,11 +115,11 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
                     mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
 
     			if (mIsFixedFrame){
-                        this.mEglRender = new EGLRender(codec.createInputSurface(), videoRect.width(), videoRect.height(), 24, 500);
+                        this.mEglRender = new EGLRender(mediaCodec.createInputSurface(), videoRect.width(), videoRect.height(), 24, 500);
                         this.mEglRender.setCallBack(mFrameCallBack);
                         surface = mEglRender.getDecodeSurface();
                     }else {
-                        surface = codec.createInputSurface();
+                        surface = mediaCodec.createInputSurface();
                     }
 
                     // does not include the locked video orientation
@@ -131,12 +131,8 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
                     if (this.mIsFixedFrame) {
                         this.mEglRender.setStartTimeNs(SystemClock.elapsedRealtimeNanos());
                         this.mEglRender.start();
-                        Ln.d("Encoder running");
+                        Ln.i("Encoder running");
                     }
-
-
-                    codec.start();
-
                     mediaCodec.start();
 
                     alive = encode(mediaCodec, streamer);
@@ -155,7 +151,7 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
                         surface.release();
                     }
 
-                    Ln.d("Encoder end");
+                    Ln.i("Encoder end");
                     if (this.mEglRender != null) {
                         this.mEglRender.stop();
                     }
@@ -422,6 +418,4 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
         return frameIndex * ONE_BILLION / maxFps;
     }
 
-
-}
 }
