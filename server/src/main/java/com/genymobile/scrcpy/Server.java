@@ -88,6 +88,7 @@ public final class Server {
 
     private static void scrcpy(Options options) throws IOException, ConfigurationException {
         Ln.i("Device: [" + Build.MANUFACTURER + "] " + Build.BRAND + " " + Build.MODEL + " (Android " + Build.VERSION.RELEASE + ")");
+        Ln.i(options.toString());
         final Device device = new Device(options);
 
         Thread initThread = startInitThread(options);

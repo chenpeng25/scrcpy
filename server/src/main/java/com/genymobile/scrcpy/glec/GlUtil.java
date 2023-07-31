@@ -5,6 +5,8 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.genymobile.scrcpy.Ln;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -34,7 +36,7 @@ public class GlUtil {
         int program = GLES20.glCreateProgram();
         checkGlError("glCreateProgram");
         if (program == 0) {
-            Log.e(TAG, "Could not create program");
+            Ln.e("Could not create program");
         }
         GLES20.glAttachShader(program, vertexShader);
         checkGlError("glAttachShader");
@@ -46,14 +48,14 @@ public class GlUtil {
         if (linkStatus[0] == 1) {
             return program;
         }
-        Log.e(TAG, "Could not link program: ");
-        Log.e(TAG, GLES20.glGetProgramInfoLog(program));
+        Ln.e("Could not link program: ");
+        Ln.e(GLES20.glGetProgramInfoLog(program));
         GLES20.glDeleteProgram(program);
         return 0;
     }
 
     public static int loadShader(int shaderType, String source) {
-        Log.v(TAG, "loadShader:");
+        Ln.d( "loadShader:");
         int shader = GLES20.glCreateShader(shaderType);
         checkGlError("glCreateShader type=" + shaderType);
         GLES20.glShaderSource(shader, source);
@@ -63,8 +65,8 @@ public class GlUtil {
         if (compiled[0] != 0) {
             return shader;
         }
-        Log.e(TAG, "Could not compile shader " + shaderType + ":");
-        Log.e(TAG, " " + GLES20.glGetShaderInfoLog(shader));
+        Ln.e("Could not compile shader " + shaderType + ":");
+        Ln.e(" " + GLES20.glGetShaderInfoLog(shader));
         GLES20.glDeleteShader(shader);
         return 0;
     }
@@ -74,7 +76,7 @@ public class GlUtil {
         int error = GLES20.glGetError();
         if (error != 0) {
             String msg = op + ": glError 0x" + Integer.toHexString(error);
-            Log.e(TAG, msg);
+            Ln.e(msg);
             throw new RuntimeException(msg);
         }
     }
@@ -86,7 +88,7 @@ public class GlUtil {
     }
 
     public static int createImageTexture(ByteBuffer data, int width, int height, int format) {
-        Log.v(TAG, "initTex:");
+        Log.d(TAG, "initTex:");
         int[] textureHandles = new int[1];
         GLES20.glGenTextures(1, textureHandles, 0);
         int textureHandle = textureHandles[0];
@@ -110,9 +112,9 @@ public class GlUtil {
     }
 
     public static void logVersionInfo() {
-        Log.i(TAG, "vendor  : " + GLES20.glGetString(7936));
-        Log.i(TAG, "renderer: " + GLES20.glGetString(7937));
-        Log.i(TAG, "version : " + GLES20.glGetString(7938));
+        Ln.v( "vendor  : " + GLES20.glGetString(7936));
+        Ln.v( "renderer: " + GLES20.glGetString(7937));
+        Ln.v( "version : " + GLES20.glGetString(7938));
     }
 
 

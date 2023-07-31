@@ -23,9 +23,9 @@ public final class SurfaceControl {
     static {
         try {
             CLASS = Class.forName("android.view.SurfaceControl");
-            for (Method m : CLASS.getDeclaredMethods()) {
+            /*for (Method m : CLASS.getDeclaredMethods()) {
                 Ln.i("-- " + m);
-            }
+            }*/
         } catch (ClassNotFoundException e) {
             throw new AssertionError(e);
         }
