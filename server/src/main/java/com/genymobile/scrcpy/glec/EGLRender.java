@@ -150,7 +150,7 @@ public class EGLRender implements SurfaceTexture.OnFrameAvailableListener {
     }
 
     private void initFPs(int fps) {
-        Log.d(TAG, "initFPs :" + fps);
+        Ln.v("initFPs :" + fps);
         this.mFps = fps;
         this.mFrameIntervalMs = 1000 / fps;
     }
@@ -263,7 +263,7 @@ public class EGLRender implements SurfaceTexture.OnFrameAvailableListener {
 
 
     private void setup() {
-        Log.d(TAG,"setup");
+        Ln.d("setup");
         this.mTextureRender = new STextureRender(this.mWidth, this.mHeight);
         this.mTextureRender.surfaceCreated();
         this.mSurfaceTexture = new SurfaceTexture(this.mTextureRender.getTextureId());

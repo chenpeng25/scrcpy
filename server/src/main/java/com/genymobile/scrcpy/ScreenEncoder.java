@@ -50,11 +50,10 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
     //是否固定帧率
     private boolean mIsFixedFrame = false;
     private EGLRender mEglRender;
-
-    private EGLRender. onFrameCallBack mFrameCallBack = new EGLRender.onFrameCallBack() {
+    private final EGLRender. onFrameCallBack mFrameCallBack = new EGLRender.onFrameCallBack() {
         @Override
         public void onError() {
-
+            Ln.e("EglRender onError!");
         }
 
         @Override
