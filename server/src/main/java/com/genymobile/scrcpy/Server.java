@@ -140,9 +140,7 @@ public final class Server {
 
             Completion completion = new Completion(asyncProcessors.size());
             for (AsyncProcessor asyncProcessor : asyncProcessors) {
-                asyncProcessor.start((fatalError) -> {
-                    completion.addCompleted(fatalError);
-                });
+                asyncProcessor.start(completion::addCompleted);
             }
 
             completion.await();

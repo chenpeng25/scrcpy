@@ -45,7 +45,7 @@ public class EGLRender implements SurfaceTexture.OnFrameAvailableListener {
     private int mEncodedCount = 0;
     //帧率
     private int mFps;
-    private boolean mFrameAvailable = false;
+    private volatile boolean mFrameAvailable = false;
     //帧间隔
     private int mFrameIntervalMs = 0;
 
@@ -53,7 +53,7 @@ public class EGLRender implements SurfaceTexture.OnFrameAvailableListener {
     private HandlerThread mHandlerThread;
 
 
-    private ReentrantLock mLock = new ReentrantLock();
+    private final ReentrantLock mLock = new ReentrantLock();
     private int mNextCheckCount = 0;
     private boolean mNotifyError = true;
     private volatile AtomicBoolean mStart = new AtomicBoolean(false);
@@ -446,7 +446,6 @@ public class EGLRender implements SurfaceTexture.OnFrameAvailableListener {
     public void stop() {
         this.mStart.set(false);
         this.mHandlerThread.quitSafely();
-        this.mLock.lock();
         this.mLock.unlock();
         this.mCallBack.onStop();
     }

@@ -3,6 +3,7 @@ package com.genymobile.scrcpy;
 import android.graphics.Rect;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
+import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.os.Build;
 import android.opengl.GLES20;
@@ -48,9 +49,9 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
 
 
     //是否固定帧率
-    private boolean mIsFixedFrame = false;
+    private boolean mIsFixedFrame = true;
     private EGLRender mEglRender;
-    private final EGLRender. onFrameCallBack mFrameCallBack = new EGLRender.onFrameCallBack() {
+    private final EGLRender.onFrameCallBack mFrameCallBack = new EGLRender.onFrameCallBack() {
         @Override
         public void onError() {
             Ln.e("EglRender onError!");
@@ -65,7 +66,7 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
     };
 
     public ScreenEncoder(Device device, Streamer streamer, int videoBitRate, int maxFps, List<CodecOption> codecOptions, String encoderName,
-            boolean downsizeOnError) {
+                         boolean downsizeOnError) {
         this.device = device;
         this.streamer = streamer;
         this.videoBitRate = videoBitRate;
@@ -91,6 +92,7 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
 
     private void streamScreen() throws IOException, ConfigurationException {
         Codec codec = streamer.getCodec();
+        printMediaCodecInfo();
         MediaCodec mediaCodec = createMediaCodec(codec, encoderName);
         MediaFormat format = createFormat(codec.getMimeType(), videoBitRate, maxFps, codecOptions);
         IBinder display = createDisplay();
@@ -113,11 +115,11 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
                 try {
                     mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
 
-    			if (mIsFixedFrame){
-                        this.mEglRender = new EGLRender(mediaCodec.createInputSurface(), videoRect.width(), videoRect.height(), 24, 500);
+                    if (mIsFixedFrame) {
+                        this.mEglRender = new EGLRender(mediaCodec.createInputSurface(), videoRect.width(), videoRect.height(), 30, 500);
                         this.mEglRender.setCallBack(mFrameCallBack);
                         surface = mEglRender.getDecodeSurface();
-                    }else {
+                    } else {
                         surface = mediaCodec.createInputSurface();
                     }
 
@@ -221,10 +223,10 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
             }
             int outputBufferId = codec.dequeueOutputBuffer(bufferInfo, -1);
 
-           boolean isKey=  (bufferInfo.flags & MediaCodec.BUFFER_FLAG_KEY_FRAME) !=0;
-           if (isKey){
-               Ln.v("编出关键帧");
-           }
+            boolean isKey = (bufferInfo.flags & MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0;
+            if (isKey) {
+                Ln.v("编出关键帧");
+            }
             try {
                 if (consumeResetCapture()) {
                     // must restart encoding with new size
@@ -278,6 +280,42 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
         }
     }
 
+    public  void printMediaCodecInfo() {
+        final MediaCodecList list = new MediaCodecList(MediaCodecList.REGULAR_CODECS);
+        final MediaCodecInfo[] codecInfos = list.getCodecInfos();
+        for (int i = 0; i < codecInfos.length; ++i) {
+            MediaCodecInfo info = null;
+            try {
+                info =codecInfos[i];
+            } catch (IllegalArgumentException e) {
+                Ln.e( "Cannot retrieve decoder codec info", e);
+            }
+            if (info == null) {
+                continue;
+            }
+            String codecInfo = "MediaCodec, name="+info.getName()+", [";
+
+            for (String mimeType : info.getSupportedTypes()) {
+                codecInfo += mimeType + ",";
+                MediaCodecInfo.CodecCapabilities capabilities;
+                try {
+                    capabilities = info.getCapabilitiesForType(mimeType);
+                } catch (IllegalArgumentException e) {
+                    Ln.e( "Cannot retrieve decoder capabilities", e);
+                    continue;
+                }
+                codecInfo += " max inst:"+capabilities.getMaxSupportedInstances()+",";
+                String strColorFormatList = "";
+                for (int colorFormat : capabilities.colorFormats) {
+                    strColorFormatList += " 0x" + Integer.toHexString(colorFormat);
+                }
+                codecInfo += strColorFormatList + "] [";
+            }
+            Ln.d(codecInfo);
+        }
+    }
+
+
     private static MediaFormat createFormat(String videoMimeType, int bitRate, int maxFps, List<CodecOption> codecOptions) {
         MediaFormat format = new MediaFormat();
         format.setString(MediaFormat.KEY_MIME, videoMimeType);
@@ -305,7 +343,7 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
             }
         }
 
-		Ln.d("encoder video format: " + format.toString());
+        Ln.d("encoder video format: " + format.toString());
 
         return format;
     }
@@ -367,7 +405,7 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
         }
     }
 
-   //---------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------
 
 
     // RGB color values for generated frames
@@ -377,6 +415,7 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
     private static final int TEST_R1 = 236;
     private static final int TEST_G1 = 50;
     private static final int TEST_B1 = 186;
+
     /**
      * Generates a frame of data using GL commands.  We have an 8-frame animation
      * sequence that wraps around.  It looks like this:
@@ -386,7 +425,7 @@ public class ScreenEncoder implements Device.RotationListener, Device.FoldListen
      * </pre>
      * We draw one of the eight rectangles and leave the rest set to the clear color.
      */
-    private void generateSurfaceFrame(int frameIndex,int mWidth,int mHeight) {
+    private void generateSurfaceFrame(int frameIndex, int mWidth, int mHeight) {
         frameIndex %= 8;
 
         int startX, startY;

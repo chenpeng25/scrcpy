@@ -18,6 +18,8 @@ public class Options {
     private int videoBitRate = 8000000; //视频码率8M
     private int audioBitRate = 128000; //音频码率128k
     private int maxFps;
+
+    private boolean isFixedFrame = true;   //是否固定帧率
     private int lockVideoOrientation = -1;
     private boolean tunnelForward;
     private Rect crop;
@@ -87,6 +89,10 @@ public class Options {
 
     public int getMaxFps() {
         return maxFps;
+    }
+
+    public boolean isFixedFrame() {
+        return isFixedFrame;
     }
 
     public int getLockVideoOrientation() {

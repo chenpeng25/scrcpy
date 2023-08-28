@@ -25,11 +25,11 @@ public class GlUtil {
 
 
     public static int createProgram(String vertexSource, String fragmentSource) {
-        int vertexShader = loadShader(35633, vertexSource);
+        int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, vertexSource);
         if (vertexShader == 0) {
             return 0;
         }
-        int pixelShader = loadShader(35632, fragmentSource);
+        int pixelShader = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentSource);
         if (pixelShader == 0) {
             return 0;
         }
@@ -44,14 +44,14 @@ public class GlUtil {
         checkGlError("glAttachShader");
         GLES20.glLinkProgram(program);
         int[] linkStatus = new int[1];
-        GLES20.glGetProgramiv(program, 35714, linkStatus, 0);
-        if (linkStatus[0] == 1) {
-            return program;
+        GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0);
+        if (linkStatus[0] != GLES20.GL_TRUE) {
+            Ln.e("Could not link program: ");
+            Ln.e(GLES20.glGetProgramInfoLog(program));
+            GLES20.glDeleteProgram(program);
+            program = 0;
         }
-        Ln.e("Could not link program: ");
-        Ln.e(GLES20.glGetProgramInfoLog(program));
-        GLES20.glDeleteProgram(program);
-        return 0;
+        return program;
     }
 
     public static int loadShader(int shaderType, String source) {
@@ -93,12 +93,21 @@ public class GlUtil {
         GLES20.glGenTextures(1, textureHandles, 0);
         int textureHandle = textureHandles[0];
         checkGlError("glGenTextures");
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureHandle);
-        GLES20.glTexParameteri(3553, 10241, 9729);
-        GLES20.glTexParameteri(3553, 10240, 9729);
-        checkGlError("loadImageTexture");
-        GLES20.glTexImage2D(3553, 0, format, width, height, 0, format, 5121, data);
-        checkGlError("loadImageTexture");
+        // Bind the texture handle to the 2D texture target.
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+
+        // Configure min/mag filtering, i.e. what scaling method do we use if what we're rendering
+        // is smaller or larger than the source image.
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
+                GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER,
+                GLES20.GL_LINEAR);
+        GlUtil.checkGlError("loadImageTexture");
+
+        // Load the data from the buffer into the texture handle.
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, /*level*/ 0, format,
+                width, height, /*border*/ 0, format, GLES20.GL_UNSIGNED_BYTE, data);
+        GlUtil.checkGlError("loadImageTexture");
         return textureHandle;
     }
 

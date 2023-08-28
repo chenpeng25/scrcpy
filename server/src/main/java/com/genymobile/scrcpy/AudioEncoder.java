@@ -82,6 +82,7 @@ public final class AudioEncoder implements AsyncProcessor {
                 Ln.d("Audio codec option set: " + key + " (" + value.getClass().getSimpleName() + ") = " + value);
             }
         }
+        Ln.d("encoder Audio format: " + format.toString());
 
         return format;
     }
